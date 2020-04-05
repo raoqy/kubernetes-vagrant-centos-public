@@ -1,0 +1,8 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: slow                                   #-------------SC的名字
+provisioner: kubernetes.io/glusterfs
+parameters:
+  resturl: "http://10.254.192.108:8080"          #-------------heketi service的cluster ip 和端口
+  restauthenabled: "false"
