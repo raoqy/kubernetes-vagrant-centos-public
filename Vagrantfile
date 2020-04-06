@@ -7,7 +7,7 @@ Vagrant.configure("2") do |config|
    vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
   end  
   #config.vm.synced_folder ".", "/vagrant", type: "nfs", nfs_udp: false
-  $num_instances = 2
+  $num_instances = 1
   # curl https://discovery.etcd.io/new?size=3
   $etcd_cluster = "node1=http://192.168.101.101:2380"
   (1..$num_instances).each do |i|
@@ -25,10 +25,12 @@ Vagrant.configure("2") do |config|
           vb.cpus = 1
           vb.name = "node#{i}"
       end
-    
-      node.vm.provision "shell", run: "always", path: "network/initnetwork.sh", args: [i]
-
-      #node.vm.provision "shell", path: "install.sh", args: [i, ip, $etcd_cluster]
+      
+      # 初始化网络设置(IP、掩码、网关、DNS等)
+      node.vm.provision "shell", path: "network/initnetwork.sh", args: [i]
+      
+      #初始化kubernetes的设置
+      node.vm.provision "shell", path: "install.sh", args: [i, ip, $etcd_cluster]
     end
   end
 end
